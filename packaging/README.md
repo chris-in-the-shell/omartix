@@ -1,0 +1,46 @@
+# Packaging Omartix from this repository
+
+Omartix keeps its source, dinit port, package recipe, tests, and future
+publication automation in one repository. No application-specific Omartix
+package repository is planned.
+
+## Scope
+
+`packaging/omartix/PKGBUILD` produces the one distribution-specific payload:
+the Omarchy commands, defaults, migrations, and Artix+dinit service assets
+that cannot safely coexist with the upstream `omarchy` and
+`omarchy-settings` packages. It replaces that core pair when it is eventually
+enabled for an Omartix installation.
+
+All other packages remain external dependencies:
+
+- Artix `system`, `world`, and `galaxy` are preferred.
+- The audited Arch `extra` compatibility list is used only for applications
+  without an init, driver, or core-library role.
+- Omarchy's signed repository remains usable for compatible Omarchy packages.
+
+## Build and publication boundary
+
+The recipe intentionally requires `OMARTIX_SRC`, so a release job builds the
+exact checked-out commit rather than downloading mutable source during a
+package build:
+
+```bash
+OMARTIX_SRC="$PWD" OMARTIX_PACKAGE_VERSION=0.1.0 makepkg --syncdeps --cleanbuild
+```
+
+The release job will sign the resulting package database and publish it to a
+provider selected later. GitHub Pages, Cloudflare R2, or another HTTPS static
+host all use the same `stable/<arch>`, `rc/<arch>`, and `edge/<arch>` layout.
+Host-specific URLs, signing fingerprints, and keyring package names are not
+hard-coded in this recipe.
+
+Until that remote channel exists, the installer keeps using Omarchy's current
+signed supplementary repository. The dinit repository finalizer can already
+persist a complete alternative trust tuple when an Omartix channel is ready.
+
+## Local ISO development
+
+Building a package from an uncommitted checkout is permitted only for local
+development and ISO smoke tests. It is not a release path and must never be
+presented as an update channel for installed systems.

@@ -1,0 +1,49 @@
+# Core Omartix payload. This is deliberately the only distribution-specific
+# runtime package: application packages continue to come from Artix, the
+# explicitly audited Arch extra compatibility repository, or Omarchy.
+
+pkgname=omartix
+pkgver=${OMARTIX_PACKAGE_VERSION:-0.0.0}
+pkgrel=${OMARTIX_PACKAGE_RELEASE:-1}
+pkgdesc='Omarchy experience ported to Artix Linux with dinit and elogind'
+arch=('x86_64')
+url='https://github.com/nokcha75/omartix'
+license=('MIT')
+depends=('bash' 'dinit' 'elogind' 'uwsm')
+provides=('omarchy')
+conflicts=('omarchy' 'omarchy-dev' 'omarchy-settings' 'omarchy-settings-dev')
+replaces=('omarchy' 'omarchy-settings')
+options=('!strip')
+source=()
+sha256sums=()
+
+: "${OMARTIX_SRC:?set OMARTIX_SRC to the checked-out Omartix source tree}"
+
+prepare() {
+  install -d "$srcdir/omartix"
+  cp -a --no-preserve=ownership "$OMARTIX_SRC/." "$srcdir/omartix/"
+}
+
+package() {
+  cd "$srcdir/omartix"
+
+  install -d "$pkgdir/usr/bin" "$pkgdir/usr/share/omarchy/bin"
+  for command in bin/*; do
+    [[ -f $command ]] || continue
+    name=$(basename "$command")
+    install -Dm755 "$command" "$pkgdir/usr/bin/$name"
+    ln -s "/usr/bin/$name" "$pkgdir/usr/share/omarchy/bin/$name"
+  done
+
+  install -d "$pkgdir/usr/share/omarchy" "$pkgdir/etc/skel/.config"
+  cp -a --no-preserve=ownership applications config default install migrations shell themes \
+    "$pkgdir/usr/share/omarchy/"
+  cp -a --no-preserve=ownership config/. "$pkgdir/etc/skel/.config/"
+  cp -a --no-preserve=ownership etc/. "$pkgdir/etc/"
+  install -Dm644 logo.txt "$pkgdir/usr/share/omarchy/logo.txt"
+  install -Dm644 version "$pkgdir/usr/share/omarchy/version"
+
+  # Omartix is dinit-only. These guards also keep a future upstream merge from
+  # accidentally reintroducing systemd payload into a published package.
+  rm -rf "$pkgdir/usr/share/omarchy/default/systemd" "$pkgdir/etc/systemd"
+}
