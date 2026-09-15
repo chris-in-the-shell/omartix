@@ -4,6 +4,11 @@ Omarchy is a beautiful, fun & agentic Linux distribution by DHH.
 
 Read more at [omarchy.org](https://omarchy.org).
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Changes affecting services, hardware,
+installation, or migrations must follow the [dinit compatibility policy](docs/dinit-compatibility.md).
+
 ## The Omarchy Manual
 
 The manual lives in [`manual/`](manual/), which is its authoritative source. It's

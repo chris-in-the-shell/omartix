@@ -46,20 +46,12 @@ dashboard_url() {
 }
 
 # --json never starts the gateway, so an empty answer means it is not running.
-# Recovery goes through the gateway's own service commands. `dashboard --yes`
-# used to be the start/install-without-prompting path, but as of 2026.9.1 it
-# defers to "the owning supervisor" for both a missing and a stopped unit,
-# and once the gateway is up it copies a one-time pairing URL into the
-# clipboard, which nothing here needs. Enablement, not the unit file, decides:
-# a unit that was written but never enabled (an install that died halfway)
-# would otherwise be "started" once and stay off at every following login,
-# where --force rewrites and enables it.
+# OpenClaw's Linux service commands create and control a systemd user unit.
+# Omartix instead owns the foreground `openclaw gateway` command through a
+# dinit user service. The helper is idempotent: it creates the boot entry if
+# needed and starts the service for this session.
 if ! url=$(dashboard_url); then
-  if systemctl --user is-enabled --quiet openclaw-gateway.service 2>/dev/null; then
-    timeout 60 openclaw gateway start >&2 || true
-  else
-    timeout 120 openclaw gateway install --force >&2 || true
-  fi
+  timeout 60 omarchy-openclaw-gateway start >&2 || true
 
   # A first-ever service install (unit write, daemon-reload, first boot)
   # takes materially longer than starting an installed unit, so the budget

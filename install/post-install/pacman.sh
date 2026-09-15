@@ -3,6 +3,14 @@
 cp -f "$OMARCHY_PATH/default/pacman/pacman-${OMARCHY_MIRROR:-stable}.conf" /etc/pacman.conf
 cp -f "$OMARCHY_PATH/default/pacman/mirrorlist-${OMARCHY_MIRROR:-stable}" /etc/pacman.d/mirrorlist
 
+# The default pacman.conf above deliberately restores Artix's normal
+# repositories after the ISO's offline bootstrap. Reapply the signed
+# supplementary package channel chosen during dinit finalization so a future
+# Omartix host can replace the default Omarchy channel without changing this
+# installer flow.
+OMARTIX_PACKAGE_REPOSITORY_USE_SAVED=1 \
+  "$OMARCHY_INSTALL/dinit/config/omarchy-package-repository.sh"
+
 # Wait for CUPS to own the file, the way omarchy-settings does, so pacman does
 # not turn the override into a .pacnew during ISO package installation.
 if [[ -f $OMARCHY_PATH/etc-overrides/cups-cups-files.conf && -f /etc/cups/cups-files.conf ]]; then

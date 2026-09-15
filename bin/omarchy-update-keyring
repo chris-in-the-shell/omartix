@@ -3,16 +3,54 @@
 # omarchy:summary=Ensure the Omarchy and Arch keyring packages are installed and populated
 # omarchy:requires-sudo=true
 
-if omarchy-pkg-missing omarchy-keyring || ! sudo pacman-key --list-keys 40DFB630FF42BCFFB047046CF0134EE680CAC571 &>/dev/null; then
-  sudo pacman-key --recv-keys 40DFB630FF42BCFFB047046CF0134EE680CAC571 --keyserver keys.openpgp.org
-  sudo pacman-key --lsign-key 40DFB630FF42BCFFB047046CF0134EE680CAC571
+set -euo pipefail
+
+repository_config=${OMARTIX_PACKAGE_REPOSITORY_CONFIG:-/etc/omartix/package-repository.conf}
+if [[ -r $repository_config ]]; then
+  # Written by the dinit package-repository finalizer with printf %q.
+  # shellcheck disable=SC1090
+  source "$repository_config"
+fi
+
+signing_fingerprint=${OMARTIX_PACKAGE_SIGNING_FINGERPRINT:-40DFB630FF42BCFFB047046CF0134EE680CAC571}
+signing_key_url=${OMARTIX_PACKAGE_SIGNING_KEY_URL:-"https://keys.openpgp.org/vks/v1/by-fingerprint/$signing_fingerprint"}
+keyring_package=${OMARTIX_PACKAGE_KEYRING_PACKAGE:-omarchy-keyring}
+
+[[ $signing_fingerprint =~ ^[A-F0-9]{40}$ ]] || {
+  echo "Invalid package signing fingerprint: $signing_fingerprint" >&2
+  exit 1
+}
+[[ $keyring_package =~ ^[A-Za-z0-9@._+:-]+$ ]] || {
+  echo "Invalid package keyring name: $keyring_package" >&2
+  exit 1
+}
+
+key_file=
+cleanup() { [[ -n $key_file ]] && rm -f "$key_file"; }
+trap cleanup EXIT
+
+if omarchy-pkg-missing "$keyring_package" || ! sudo pacman-key --list-keys "$signing_fingerprint" &>/dev/null; then
+  omarchy-cmd-present curl || {
+    echo "curl is required to bootstrap the package signing key." >&2
+    exit 1
+  }
+
+  key_file=$(mktemp)
+  curl -fsSL "$signing_key_url" -o "$key_file"
+  fingerprint=$(gpg --show-keys --with-colons "$key_file" | awk -F: '$1 == "fpr" { print $10; exit }')
+  [[ $fingerprint == "$signing_fingerprint" ]] || {
+    echo "Downloaded package signing key fingerprint did not match." >&2
+    exit 1
+  }
+  sudo pacman-key --add "$key_file"
+  sudo pacman-key --lsign-key "$signing_fingerprint"
 
   # This is generally not a good idea, but this is a special case because we're going to be updating
   # the full set of packages in omarchy-update-system-pkgs right after this (and it needs latest keyring)!
   sudo pacman -Sy
-  omarchy-pkg-add omarchy-keyring
+  omarchy-pkg-add "$keyring_package"
 
-  sudo pacman-key --list-keys 40DFB630FF42BCFFB047046CF0134EE680CAC571
+  sudo pacman-key --list-keys "$signing_fingerprint"
 fi
 
 # Ensure we have the latest archlinux-keyring, maintainer keys might have changed
