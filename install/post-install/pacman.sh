@@ -18,4 +18,11 @@ if [[ -f $OMARCHY_PATH/etc-overrides/cups-cups-files.conf && -f /etc/cups/cups-f
   rm -f /etc/cups/cups-files.conf.pacnew
 fi
 
+# Plymouth owns its daemon configuration. Apply Omartix's theme selection only
+# after pacman has installed the owner, avoiding a file-conflict transaction.
+if [[ -f $OMARCHY_PATH/etc-overrides/plymouth-plymouthd.conf && -f /etc/plymouth/plymouthd.conf ]]; then
+  install -m 0644 -o root -g root "$OMARCHY_PATH/etc-overrides/plymouth-plymouthd.conf" /etc/plymouth/plymouthd.conf
+  rm -f /etc/plymouth/plymouthd.conf.pacnew
+fi
+
 source "$OMARCHY_INSTALL/hardware/pacman.sh"

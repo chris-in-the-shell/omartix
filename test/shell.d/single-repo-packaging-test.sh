@@ -96,7 +96,9 @@ grep -qx 'etc/elogind/logind.conf.d/20-inhibit-delay.conf' <<<"$package_entries"
   fail "package ships elogind configuration"
 grep -qx 'usr/share/omarchy/etc-overrides/cups-cups-files.conf' <<<"$package_entries" ||
   fail "package ships CUPS policy as a post-install override"
-! grep -Eq '^etc/(nsswitch\.conf|security/faillock\.conf|cups/cups-files\.conf)$' <<<"$package_entries" ||
+grep -qx 'usr/share/omarchy/etc-overrides/plymouth-plymouthd.conf' <<<"$package_entries" ||
+  fail "package ships Plymouth theme selection as a post-install override"
+! grep -Eq '^etc/(nsswitch\.conf|security/faillock\.conf|cups/cups-files\.conf|plymouth/plymouthd\.conf)$' <<<"$package_entries" ||
   fail "package archive does not conflict with Artix-owned configuration files"
 ! grep -Eq '(^|/)systemd(/|$)' <<<"$package_entries" ||
   fail "published package archive contains no systemd payload"

@@ -44,7 +44,7 @@ package() {
   # by the core archive: pacman rejects the transaction before Omartix's
   # post-install configuration can run. Their intentional overrides live in
   # etc-overrides/ and are applied only after the owning package is present.
-  for path in nsswitch.conf security/faillock.conf cups/cups-files.conf; do
+  for path in nsswitch.conf security/faillock.conf cups/cups-files.conf plymouth/plymouthd.conf; do
     [[ ! -e "etc/$path" ]] || {
       printf 'ERROR: upstream-owned configuration must be in etc-overrides: %s\n' "$path" >&2
       return 1

@@ -32,6 +32,8 @@ post_install_pacman="$ROOT/install/post-install/pacman.sh"
   fail "a fresh install does not write configuration for absent printer discovery"
 grep -q 'cups-cups-files.conf && -f /etc/cups/cups-files.conf' "$post_install_pacman" ||
   fail "the CUPS authorization override waits for the file it replaces"
+grep -q 'plymouth-plymouthd.conf && -f /etc/plymouth/plymouthd.conf' "$post_install_pacman" ||
+  fail "the Plymouth theme override waits for the file it replaces"
 
 pass "the fresh install applies CUPS hardening without writing discovery configuration"
 

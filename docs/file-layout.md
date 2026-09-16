@@ -104,9 +104,13 @@ etc/**                         ──►  omarchy-settings    /etc/**           
   ├─ limine-entry-tool.d/{omarchy-defaults,omarchy-uki}.conf
   ├─ NetworkManager/, sudoers.d/, sysctl.d/, tmpfiles.d/,
   │  profile.d/omarchy.sh, …                            (a summary — `ls etc/` for the full ~17-entry tree)
-  └─ security/faillock.conf, nsswitch.conf,
-     plymouth/plymouthd.conf                            /usr/share/omarchy/etc-overrides/
-                                                          → /etc/* (post_install cp -f, see below)
+  └─ (upstream-owned files are not placed here; see
+     etc-overrides/ below)
+
+etc-overrides/{nsswitch.conf,security-faillock.conf,
+  cups-cups-files.conf,plymouth-plymouthd.conf}          ──►  omartix
+                                                        /usr/share/omarchy/etc-overrides/
+                                                          → /etc/* (post-install copy, see below)
 
 default/limine/limine.conf     ──►  omarchy-settings    /usr/share/omarchy/default/limine/limine.conf
 default/limine/default.conf    ──►  omarchy-settings    /usr/share/omarchy/default/limine/default.conf
@@ -148,15 +152,15 @@ copy only on machines that need it; it is not installed by `omarchy-settings`.
 ### Why `etc-overrides/` exists
 
 Some files under `/etc/` (`.bashrc` in `/etc/skel`, `nsswitch.conf`,
-`security/faillock.conf`, `plymouth/plymouthd.conf`)
-are owned by upstream Arch packages, so we can't install over them via pacman
-without a file conflict. Instead their sources (under `etc/` in the repo;
-`.bashrc` from `default/bashrc`) ship at
-`/usr/share/omarchy/etc-overrides/` and the `omarchy-settings` `post_install`
-/ `post_upgrade` scriptlet `cp -f`'s them into place.
+`security/faillock.conf`, `cups/cups-files.conf`, and
+`plymouth/plymouthd.conf`) are owned by upstream packages, so Omartix cannot
+install over them via pacman without a file conflict. Their sources therefore
+live directly in `etc-overrides/` (with `.bashrc` from `default/bashrc`) and
+ship at `/usr/share/omarchy/etc-overrides/`. The installer copies them into
+place only after pacman has installed the owning package.
 
-Tradeoff: user edits to those files get clobbered on every `omarchy-settings`
-upgrade. This is documented in the PKGBUILD.
+Tradeoff: user edits to those files get clobbered whenever the Omartix
+post-install finalizer is run. This is documented in the PKGBUILD.
 
 ## Locate indexing
 
@@ -355,9 +359,9 @@ return to the packaged default.
 | --- | --- |
 | Default file at `~/.config/foo/` | `config/foo/` |
 | `/etc/` drop-in we own outright | `etc/` |
-| `/etc/` file owned by an upstream package | `etc/` (see `etc/security/faillock.conf`), then add to `etc-overrides` in `omarchy-settings` PKGBUILD + scriptlet |
-| Package-owned system file (e.g. systemd user service in `/usr/lib`) | `default/`, then add the `install -Dm644` line in `omarchy-settings` PKGBUILD |
-| Per-user file that's static but lives outside `~/.config` | `default/`, then add `install -Dm644 ... $pkgdir/etc/skel/...` in `omarchy-settings` PKGBUILD |
+| `/etc/` file owned by an upstream package | `etc-overrides/`, then apply it after the owning package is installed in `install/post-install/pacman.sh` |
+| Package-owned system file (e.g. a dinit user service in `/usr/lib`) | `default/`, then add the `install -Dm644` line in the `omartix` PKGBUILD |
+| Per-user file that's static but lives outside `~/.config` | `default/`, then add `install -Dm644 ... $pkgdir/etc/skel/...` in the `omartix` PKGBUILD |
 | Runtime tweak that needs `$HOME` or live system state | extend `omarchy-provision-user`, or add a per-user leaf under `install/user/` and wire into `install/user/all.sh` |
 | One-time root-side setup step | `install/dinit/config/*.sh` or `install/hardware/*.sh`, wire into `install/dinit/config/all.sh` or `install/hardware/all.sh` |
 | One-time fix for existing installs | `migrations/<unix-timestamp>.sh` |
