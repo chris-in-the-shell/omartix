@@ -23,6 +23,6 @@ enable_dinit_service() {
 # Dependencies supplied by the respective Artix *-dinit packages start
 # automatically from these roots. Do not add a resolved/oomd substitute here:
 # DNS is owned by NetworkManager and dinit has no systemd slice model.
-for service in dbus logind NetworkManager bluetoothd dockerd cups avahi-daemon power-profiles-daemon sddm limine-snapper-sync zramen earlyoom; do
+for service in dbus logind NetworkManager bluetoothd dockerd cupsd avahi-daemon tlp sddm limine-snapper-sync zramen earlyoom; do
   enable_dinit_service "$service"
 done

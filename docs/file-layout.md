@@ -3,6 +3,12 @@
 How `omarchy/` is organized and where everything ends up on an installed
 system.
 
+> **Omartix note:** this page largely documents the upstream Omarchy layout.
+> Omartix publishes a single dinit+elogind core package instead; upstream
+> systemd and UWSM paths mentioned below are excluded from that package. See
+> `packaging/README.md` and `docs/dinit-compatibility.md` for the maintained
+> Omartix boundary.
+
 ## Mental model
 
 Two Arch packages are built from this one repo (PKGBUILDs live in the

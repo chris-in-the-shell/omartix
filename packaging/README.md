@@ -39,6 +39,20 @@ Until that remote channel exists, the installer keeps using Omarchy's current
 signed supplementary repository. The dinit repository finalizer can already
 persist a complete alternative trust tuple when an Omartix channel is ready.
 
+## Init-system boundary
+
+The source tree retains some upstream `systemd` and UWSM defaults so upstream
+merges remain reviewable. They are not part of the published Omartix package:
+the package recipe removes `default/systemd`, `default/uwsm`, and
+`/etc/systemd`, while dinit and elogind own the installed system and session
+lifecycle.
+
+Two legacy migrations still mention systemd only to identify and remove
+unsafe files left by retired upstream installers. They never start or manage
+systemd. The package test treats those two cleanup migrations as an explicit
+allowlist, so a future systemd-specific migration requires an Omartix port or
+an intentional review before it can be released.
+
 ## Local ISO development
 
 Building a package from an uncommitted checkout is permitted only for local

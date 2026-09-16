@@ -76,8 +76,7 @@ if [[ $tui == "true" ]]; then
   exec openclaw tui "${message[@]}"
 fi
 
-# The handoff URL rides in the browser's argv, which uwsm's app daemon echoes
-# into the user journal. Accepted: the token is single-use with a ten-minute
-# expiry against a loopback-only gateway, and journal access already implies
-# access to ~/.openclaw itself.
+# The handoff URL rides in the browser's argv. It is single-use with a
+# ten-minute expiry against a loopback-only gateway, and local process access
+# already implies access to ~/.openclaw itself.
 exec omarchy-launch-webapp "$url"

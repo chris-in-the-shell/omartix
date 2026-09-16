@@ -18,9 +18,9 @@ grep -F 'omarchy-snapper-cleanup' "$config_dir/snapper.sh" >/dev/null ||
   fail "dinit finalizer owns Snapper cleanup"
 grep -F 'dinit/config/enable-services.sh' "$config_dir/all.sh" >/dev/null ||
   fail "dinit finalizer enables installed-system services"
-grep -F 'for service in dbus logind NetworkManager bluetoothd dockerd cups avahi-daemon power-profiles-daemon sddm limine-snapper-sync zramen earlyoom; do' "$services" >/dev/null ||
+grep -F 'for service in dbus logind NetworkManager bluetoothd dockerd cupsd avahi-daemon tlp sddm limine-snapper-sync zramen earlyoom; do' "$services" >/dev/null ||
   fail "dinit finalizer enables Omarchy's installed-system services"
-for package in avahi-dinit bluez-dinit cups-dinit dbus-dinit dbus-dinit-user docker-dinit earlyoom earlyoom-dinit elogind-dinit limine-snapper-sync-dinit networkmanager-dinit pipewire-dinit pipewire-pulse-dinit power-profiles-daemon-dinit sddm-dinit wireplumber-dinit zramen zramen-dinit; do
+for package in avahi-dinit bluez-dinit cups-dinit dbus-dinit dbus-dinit-user docker-dinit earlyoom earlyoom-dinit elogind-dinit limine-snapper-sync-dinit networkmanager-dinit pipewire-dinit pipewire-pulse-dinit sddm-dinit tlp-dinit wireplumber-dinit zramen zramen-dinit; do
   rg -Fx "$package" "$packages" >/dev/null ||
     fail "Artix package manifest supplies $package"
 done

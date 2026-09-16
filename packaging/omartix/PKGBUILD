@@ -9,7 +9,7 @@ pkgdesc='Omarchy experience ported to Artix Linux with dinit and elogind'
 arch=('x86_64')
 url='https://github.com/nokcha75/omartix'
 license=('MIT')
-depends=('bash' 'dinit' 'elogind' 'uwsm')
+depends=('bash' 'dinit' 'elogind')
 provides=('omarchy')
 conflicts=('omarchy' 'omarchy-dev' 'omarchy-settings' 'omarchy-settings-dev')
 replaces=('omarchy' 'omarchy-settings')
@@ -45,5 +45,6 @@ package() {
 
   # Omartix is dinit-only. These guards also keep a future upstream merge from
   # accidentally reintroducing systemd payload into a published package.
-  rm -rf "$pkgdir/usr/share/omarchy/default/systemd" "$pkgdir/etc/systemd"
+  rm -rf "$pkgdir/usr/share/omarchy/default/systemd" \
+    "$pkgdir/usr/share/omarchy/default/uwsm" "$pkgdir/etc/systemd"
 }

@@ -50,13 +50,13 @@ pipewire-jack
 pipewire-pulse
 pipewire-dinit
 pipewire-pulse-dinit
-power-profiles-daemon-dinit
 qt6-wayland
 snapper
 sddm-dinit
 sof-firmware
 thermald
 thermald-dinit
+tlp-dinit
 webp-pixbuf-loader
 wireplumber-dinit
 yay-debug
