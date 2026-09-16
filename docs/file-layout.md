@@ -101,7 +101,7 @@ applications/icons/*           ──►  omarchy-settings    /usr/share/icons/h
 
 etc/**                         ──►  omarchy-settings    /etc/**           (drop-ins we own outright)
   ├─ mkinitcpio.conf.d/{omarchy_hooks,thunderbolt_module}.conf
-  ├─ limine-entry-tool.d/{omarchy-defaults,omarchy-uki}.conf
+  ├─ limine-entry-tool.d/omarchy-defaults.conf
   ├─ NetworkManager/, sudoers.d/, sysctl.d/, tmpfiles.d/,
   │  profile.d/omarchy.sh, …                            (a summary — `ls etc/` for the full ~17-entry tree)
   └─ (upstream-owned files are not placed here; see
@@ -148,6 +148,10 @@ logo.{txt,svg}, icon.{txt,png}  ──► omarchy-settings    /usr/share/omarchy
 The hardware-conditional `keyboard-backlight` source lives under
 `default/elogind/system-sleep/`. Its hibernation setup publishes a root-owned
 copy only on machines that need it; it is not installed by `omarchy-settings`.
+
+Omartix deliberately does not ship Omarchy's `omarchy-uki.conf` drop-in.
+That file forces the systemd UKI toolchain; the Artix+dinit install path uses
+Limine entries with mkinitcpio-generated kernel and initramfs files instead.
 
 ### Why `etc-overrides/` exists
 

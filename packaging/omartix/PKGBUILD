@@ -58,4 +58,9 @@ package() {
   # accidentally reintroducing systemd payload into a published package.
   rm -rf "$pkgdir/usr/share/omarchy/default/systemd" \
     "$pkgdir/usr/share/omarchy/default/uwsm" "$pkgdir/etc/systemd"
+
+  # The upstream UKI drop-in requires the systemd UKI toolchain. Artix+dinit
+  # uses the regular Limine/mkinitcpio entry path instead; keeping this file
+  # makes limine-update silently leave an entry-less boot menu.
+  rm -f "$pkgdir/etc/limine-entry-tool.d/omarchy-uki.conf"
 }

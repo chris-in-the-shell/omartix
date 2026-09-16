@@ -94,6 +94,8 @@ grep -qx 'usr/share/omarchy/install/artix/dinit/user/omarchy-sleep-lock' <<<"$pa
   fail "package ships dinit user service definitions"
 grep -qx 'etc/elogind/logind.conf.d/20-inhibit-delay.conf' <<<"$package_entries" ||
   fail "package ships elogind configuration"
+! grep -qx 'etc/limine-entry-tool.d/omarchy-uki.conf' <<<"$package_entries" ||
+  fail "dinit package does not force the unavailable systemd UKI path"
 grep -qx 'usr/share/omarchy/etc-overrides/cups-cups-files.conf' <<<"$package_entries" ||
   fail "package ships CUPS policy as a post-install override"
 grep -qx 'usr/share/omarchy/etc-overrides/plymouth-plymouthd.conf' <<<"$package_entries" ||
@@ -110,6 +112,8 @@ grep -Fxq 'Exec=start-hyprland' "$package_payload/usr/share/omarchy/default/wayl
   fail "published package starts the Omartix Hyprland session directly"
 grep -Fq 'loginctl terminate-session' "$package_payload/usr/bin/omarchy-system-logout" ||
   fail "published package ends graphical sessions through elogind"
+! rg -q '^ENABLE_UKI=yes$' "$package_payload/etc/limine-entry-tool.d" ||
+  fail "published package leaves Limine on its Artix-compatible initramfs path"
 
 package_info=$(bsdtar -xOf "$package_archive" .PKGINFO)
 grep -qx 'pkgname = omartix' <<<"$package_info" ||
