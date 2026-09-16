@@ -37,7 +37,9 @@ jobs:
                 test/shell.d/dinit-dns-test.sh \
                 test/shell.d/omarchy-package-repository-test.sh \
                 test/shell.d/update-keyring-package-repository-test.sh \
-                test/shell.d/single-repo-packaging-test.sh
+                test/shell.d/single-repo-packaging-test.sh \
+                iso/artix/test/unit/artix-handoff-boundary-test.sh \
+                iso/artix/test/unit/source-boundary-test.sh
               do
                 bash "$test"
               done

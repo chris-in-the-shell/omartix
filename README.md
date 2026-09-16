@@ -9,6 +9,12 @@ Read more at [omarchy.org](https://omarchy.org).
 See [CONTRIBUTING.md](CONTRIBUTING.md). Changes affecting services, hardware,
 installation, or migrations must follow the [dinit compatibility policy](docs/dinit-compatibility.md).
 
+## Artix+dinit ISO development
+
+The Artix ISO builder, installer media, package recipes, and KVM acceptance
+tests live in [`iso/artix/`](iso/artix/). A fresh Omartix clone is sufficient
+for ISO development; see its [build guide](iso/artix/builder/README.md).
+
 ## The Omarchy Manual
 
 The manual lives in [`manual/`](manual/), which is its authoritative source. It's
