@@ -5,7 +5,7 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 packages="$ROOT/install/omarchy-base.packages"
-cups_files_conf="$ROOT/etc/cups/cups-files.conf"
+cups_files_conf="$ROOT/etc-overrides/cups-cups-files.conf"
 
 # Only discovery goes. Everything else printing needs stays, or this stops
 # being a removal of one daemon and becomes a removal of printing.

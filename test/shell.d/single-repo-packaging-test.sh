@@ -94,6 +94,10 @@ grep -qx 'usr/share/omarchy/install/artix/dinit/user/omarchy-sleep-lock' <<<"$pa
   fail "package ships dinit user service definitions"
 grep -qx 'etc/elogind/logind.conf.d/20-inhibit-delay.conf' <<<"$package_entries" ||
   fail "package ships elogind configuration"
+grep -qx 'usr/share/omarchy/etc-overrides/cups-cups-files.conf' <<<"$package_entries" ||
+  fail "package ships CUPS policy as a post-install override"
+! grep -Eq '^etc/(nsswitch\.conf|security/faillock\.conf|cups/cups-files\.conf)$' <<<"$package_entries" ||
+  fail "package archive does not conflict with Artix-owned configuration files"
 ! grep -Eq '(^|/)systemd(/|$)' <<<"$package_entries" ||
   fail "published package archive contains no systemd payload"
 ! grep -Eq '(^|/)uwsm(/|$)' <<<"$package_entries" ||
