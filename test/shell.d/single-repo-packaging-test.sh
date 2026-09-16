@@ -16,6 +16,10 @@ grep -Fx 'depends=('\''bash'\'' '\''dinit'\'' '\''elogind'\'')' "$recipe" >/dev/
   fail "core package declares its dinit session prerequisites"
 grep -F '"${OMARTIX_SRC:?set OMARTIX_SRC to the checked-out Omartix source tree}"' "$recipe" >/dev/null ||
   fail "package build is pinned to the release job checkout"
+! grep -Fq '"$OMARTIX_SRC/."' "$recipe" ||
+  fail "package build never copies the whole checkout into makepkg's source tree"
+grep -Fq 'for source_path in applications bin config default etc etc-overrides install migrations shell themes logo.txt version; do' "$recipe" ||
+  fail "package build has an explicit runtime payload allowlist"
 grep -F '"$pkgdir/usr/share/omarchy/default/uwsm"' "$recipe" >/dev/null ||
   fail "core package rejects UWSM payload"
 grep -F '"$pkgdir/usr/share/omarchy/default/systemd"' "$recipe" >/dev/null ||

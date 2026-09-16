@@ -21,7 +21,19 @@ sha256sums=()
 
 prepare() {
   install -d "$srcdir/omartix"
-  cp -a --no-preserve=ownership "$OMARTIX_SRC/." "$srcdir/omartix/"
+
+  # Do not copy the whole checkout. ISO builds deliberately keep their
+  # disposable art-tools workspace under iso/artix/, and copying it would
+  # recursively copy makepkg's own $srcdir back into itself. This explicit
+  # list is also the complete source payload consumed by package().
+  local source_path
+  for source_path in applications bin config default etc etc-overrides install migrations shell themes logo.txt version; do
+    [[ -e "$OMARTIX_SRC/$source_path" ]] || {
+      printf 'ERROR: Omartix source payload is missing: %s\n' "$source_path" >&2
+      return 1
+    }
+    cp -a --no-preserve=ownership "$OMARTIX_SRC/$source_path" "$srcdir/omartix/"
+  done
 }
 
 package() {

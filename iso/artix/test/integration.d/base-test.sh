@@ -302,6 +302,39 @@ wait_for_ssh() {
   done
 }
 
+# An encrypted base image asks for its LUKS passphrase on every boot, including
+# the throwaway overlays used by the post-install scenarios.  The Artix
+# plymouth prompt says "A password is required to access …" rather than the
+# mkinitcpio text used by older fixtures, so keep both forms here.
+unlock_encrypted_boot() {
+  [[ ${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-true} == true ]] || return 0
+
+  local timeout=${1:-180} waited=0 text
+  while true; do
+    text=$(ocr_screen)
+    if grep -Eqi 'enter passphrase|passphrase for|unlock.*device|password is required to access.*volume' <<<"$text"; then
+      log "Entering the encrypted-install LUKS passphrase."
+      capture_console "success-luks-prompt-$SCENARIO"
+      type_text "$GUEST_PASSWORD"
+      press ret
+      return 0
+    fi
+
+    if ! vm_running; then
+      echo 'VM exited while waiting for the LUKS prompt' >&2
+      return 1
+    fi
+    if (( waited >= timeout )); then
+      capture_console "failure-luks-prompt-$SCENARIO"
+      echo "Timed out after ${timeout}s waiting for the LUKS prompt" >&2
+      return 1
+    fi
+
+    sleep 3
+    ((waited += 3))
+  done
+}
+
 # Authorize SSH the way a person would when the guest has no key yet (or a
 # reset just scrubbed it): console login on a spare TTY, then a bootstrap
 # script fetched from a throwaway host HTTP server.
@@ -376,7 +409,7 @@ build_cidata() {
   # The Artix backend determines encryption from user_configuration.json;
   # user_encrypt_installation.txt is only retained for the wizard's review
   # flow.  Keep this fixture byte-for-byte equivalent to the wizard output.
-  if [[ ${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-false} == true ]]; then
+  if [[ ${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-true} == true ]]; then
     disk_encryption_config=$(cat <<EOF
 ,
         "disk_encryption": {
@@ -504,7 +537,7 @@ EOF
   echo "test@omarchy.org" >"$dir/user_email_address.txt"
   # Exercise both installer choices without duplicating the unattended
   # configuration.  The encrypted path is the release-critical default.
-  echo "${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-false}" >"$dir/user_encrypt_installation.txt"
+  echo "${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-true}" >"$dir/user_encrypt_installation.txt"
   cp "$SSH_KEY.pub" "$dir/authorized_keys"
 
   rm -f "$CIDATA_IMG"
@@ -566,8 +599,8 @@ install_phase() {
     # key: the first boot must ask for the LUKS passphrase. The cidata fixture
     # uses the ordinary test password for that passphrase, so submit it once
     # when mkinitcpio's encrypt hook displays its early-boot prompt.
-    if [[ ${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-false} == true && $luks_passphrase_submitted == false ]] &&
-      grep -Eqi 'enter passphrase|passphrase for|unlock.*device' <<<"$text"; then
+    if [[ ${OMARCHY_INTEGRATION_ENCRYPT_INSTALLATION:-true} == true && $luks_passphrase_submitted == false ]] &&
+      grep -Eqi 'enter passphrase|passphrase for|unlock.*device|password is required to access.*volume' <<<"$text"; then
       log "Entering the encrypted-install LUKS passphrase."
       capture_console "success-install-luks-prompt"
       type_text "$GUEST_PASSWORD"

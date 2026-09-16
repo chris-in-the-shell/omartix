@@ -103,6 +103,7 @@ reset_phase() {
   log "Booting reset VM from base image overlay"
 
   start_vm_from_base
+  unlock_encrypted_boot
   wait_for_ssh "$BOOT_TIMEOUT"
 
   fixture_shared_esp
