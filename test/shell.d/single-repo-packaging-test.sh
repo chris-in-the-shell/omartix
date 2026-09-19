@@ -44,8 +44,10 @@ for package in tlp tlp-pd; do
   grep -Fxq "$package" "$ROOT/install/omarchy-base.packages" ||
     fail "dinit runtime manifest supplies $package"
 done
-grep -Fxq 'tlp-dinit' "$ROOT/install/omarchy-other.packages" ||
+grep -Fxq 'tlp-dinit' "$ROOT/install/artix/omarchy-other.packages" ||
   fail "Artix package manifest supplies the TLP dinit service"
+grep -Fxq 'linux-omarchy' "$ROOT/install/omarchy-other.packages" ||
+  fail "upstream package manifest remains in the tree for merges"
 
 # These migrations are security cleanups for files written by retired upstream
 # installers. They must never execute systemd; a new init-specific migration
@@ -122,6 +124,17 @@ grep -qx 'usr/local/share/wayland-sessions/omarchy.desktop' <<<"$package_entries
   fail "package publishes the Omartix Wayland session desktop file"
 grep -Fq 'not available on Omartix' "$package_payload/usr/bin/omarchy-upgrade-to-quattro" ||
   fail "published package ships the Omartix Quattro upgrader stub"
+grep -Fq 'OMARTIX_PACKAGE_SIGNING_FINGERPRINT' "$package_payload/usr/bin/omarchy-update-keyring" ||
+  fail "published package ships the Artix keyring bootstrap"
+grep -Fxq 'linux' "$package_payload/usr/share/omarchy/install/omarchy-other.packages" ||
+  fail "published package ships the Artix kernel package list"
+! grep -Fxq 'linux-omarchy' "$package_payload/usr/share/omarchy/install/omarchy-other.packages" ||
+  fail "published package does not install linux-omarchy"
+! grep -F 'fix-elgato-camlink-4k.sh' "$package_payload/usr/share/omarchy/install/hardware/all.sh" ||
+  fail "published hardware install does not call the Elgato script"
+grep -Fxq 'BOOT_ORDER="*, *fallback, Snapshots"' \
+  "$package_payload/etc/limine-entry-tool.d/omarchy-defaults.conf" ||
+  fail "published Limine defaults keep the Artix kernel first"
 ! grep -Eq '(^|/)default/systemd/' <<<"$package_entries" ||
   fail "published package does not ship restored systemd units"
 grep -Fq 'loginctl terminate-session' "$package_payload/usr/bin/omarchy-system-logout" ||

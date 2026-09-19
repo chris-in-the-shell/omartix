@@ -45,9 +45,10 @@ The source tree retains some upstream `systemd` and UWSM defaults so upstream
 merges remain reviewable. They are not part of the published Omartix package:
 the package recipe removes `default/systemd`, `default/uwsm`, and
 `/etc/systemd`, while dinit and elogind own the installed system and session
-lifecycle. The same substitution applies to `omarchy-upgrade-to-quattro`: the
-tree keeps the upstream converter, and the package installs the Artix guidance
-stub from `install/artix/`.
+lifecycle. The same substitution applies to `omarchy-upgrade-to-quattro`, the keyring
+helper, Limine `BOOT_ORDER`, and the ISO package/hardware lists: the tree keeps
+the upstream files, and the package installs the Artix copies from
+`install/artix/` and `bin/omartix-update-keyring`.
 
 Two legacy migrations still mention systemd only to identify and remove
 unsafe files left by retired upstream installers. They never start or manage

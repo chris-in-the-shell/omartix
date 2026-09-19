@@ -5,7 +5,7 @@ set -euo pipefail
 source "$(dirname "$0")/base-test.sh"
 
 script="$ROOT/install/hardware/intel/lpmd.sh"
-packages="$ROOT/install/omarchy-other.packages"
+packages="$ROOT/install/artix/omarchy-other.packages"
 compatibility_note="$ROOT/docs/dinit-compatibility.md"
 
 ! rg -q 'omarchy-pkg-add.*intel-lpmd|\b(systemctl|dinitctl)\b' "$script" || fail "LPMD installer must not activate an unsupported service"

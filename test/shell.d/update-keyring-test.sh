@@ -97,7 +97,7 @@ run_keyring() {
   KEYRING_TEST_LOG="$log_file" \
     KEYRING_TEST_DIR="$test_tmp" \
     PATH="$stub_bin:$PATH" \
-    "$ROOT/bin/omarchy-update-keyring" "$@"
+    "$ROOT/bin/omartix-update-keyring" "$@"
 }
 
 # Everything healthy: the key and package are present, the reinstall works.

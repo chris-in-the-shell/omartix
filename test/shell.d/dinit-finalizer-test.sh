@@ -7,7 +7,7 @@ source "$(dirname "$0")/base-test.sh"
 finalizer="$ROOT/bin/omarchy-apply-system"
 config_dir="$ROOT/install/dinit/config"
 services="$config_dir/enable-services.sh"
-packages="$ROOT/install/omarchy-other.packages"
+packages="$ROOT/install/artix/omarchy-other.packages"
 
 bash -n "$finalizer" "$config_dir/all.sh" "$config_dir/snapper.sh" "$config_dir/firewall.sh" \
   "$services" "$ROOT/bin/omarchy-snapper-cleanup"

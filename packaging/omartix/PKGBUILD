@@ -51,6 +51,8 @@ package() {
   # Omartix guidance stub so `omarchy upgrade to quattro` cannot rewrite Artix.
   install -Dm755 install/artix/omarchy-upgrade-to-quattro \
     "$pkgdir/usr/bin/omarchy-upgrade-to-quattro"
+  install -Dm755 bin/omartix-update-keyring \
+    "$pkgdir/usr/bin/omarchy-update-keyring"
 
   install -d "$pkgdir/usr/share/omarchy" "$pkgdir/etc/skel/.config"
   cp -a --no-preserve=ownership applications config default etc-overrides install migrations shell themes \
@@ -87,4 +89,12 @@ package() {
   # uses the regular Limine/mkinitcpio entry path instead; keeping this file
   # makes limine-update silently leave an entry-less boot menu.
   rm -f "$pkgdir/etc/limine-entry-tool.d/omarchy-uki.conf"
+
+  # Artix substitutions: keep upstream files in the tree for merges.
+  install -Dm644 install/artix/omarchy-defaults.conf \
+    "$pkgdir/etc/limine-entry-tool.d/omarchy-defaults.conf"
+  install -Dm644 install/artix/omarchy-other.packages \
+    "$pkgdir/usr/share/omarchy/install/omarchy-other.packages"
+  install -Dm644 install/artix/hardware/all.sh \
+    "$pkgdir/usr/share/omarchy/install/hardware/all.sh"
 }

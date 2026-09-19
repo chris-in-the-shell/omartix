@@ -6,7 +6,7 @@ set -euo pipefail
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 fix_t2="$ROOT/install/hardware/apple/fix-t2.sh"
-other_packages="$ROOT/install/omarchy-other.packages"
+other_packages="$ROOT/install/artix/omarchy-other.packages"
 migration="$ROOT/migrations/1785944594.sh"
 compatibility_note="$ROOT/docs/dinit-compatibility.md"
 

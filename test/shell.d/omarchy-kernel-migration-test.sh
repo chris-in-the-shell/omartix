@@ -6,6 +6,7 @@ source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
 skip_file="$ROOT/migrations/artix-skip.txt"
 grep -Fxq '1789325478.sh' "$skip_file" || fail "linux-omarchy kernel migration is on the Artix skip list"
+grep -Fxq '1789444024.sh' "$skip_file" || fail "Omarchy/T2 header migration is on the Artix skip list"
 grep -F 'linux-omarchy' "$ROOT/migrations/1789325478.sh" >/dev/null ||
   fail "the skipped kernel migration keeps the upstream linux-omarchy script"
 

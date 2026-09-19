@@ -8,7 +8,7 @@ timezone_menu="$ROOT/bin/omarchy-menu-timezone"
 time_update="$ROOT/bin/omarchy-update-time"
 setup_form="$ROOT/install/provisioning/setup-form.sh"
 owner_provision="$ROOT/bin/omarchy-provision-owner"
-packages="$ROOT/install/omarchy-other.packages"
+packages="$ROOT/install/artix/omarchy-other.packages"
 
 for path in "$timezone_menu" "$time_update" "$setup_form"; do
   if rg -n '\btimedatectl\b|\bsystemctl\b|systemd-timesyncd' "$path"; then

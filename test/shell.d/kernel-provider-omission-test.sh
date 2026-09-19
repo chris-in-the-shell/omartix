@@ -4,8 +4,8 @@ set -euo pipefail
 # shellcheck disable=SC1091
 source "$(dirname "$0")/base-test.sh"
 
-packages="$ROOT/install/omarchy-other.packages"
-hardware="$ROOT/install/hardware/all.sh"
+packages="$ROOT/install/artix/omarchy-other.packages"
+hardware="$ROOT/install/artix/hardware/all.sh"
 compatibility_note="$ROOT/docs/dinit-compatibility.md"
 
 ! rg -Fx 'linux-ptl' "$packages" >/dev/null || fail "linux-ptl must not be in the ISO package manifest"

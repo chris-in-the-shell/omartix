@@ -5,7 +5,7 @@ set -euo pipefail
 # shellcheck disable=SC1091
 source "$(dirname "$0")/base-test.sh"
 
-hardware_all="$ROOT/install/hardware/all.sh"
+hardware_all="$ROOT/install/artix/hardware/all.sh"
 migration="$ROOT/migrations/1788862626.sh"
 compatibility_note="$ROOT/docs/dinit-compatibility.md"
 menu="$ROOT/default/omarchy/omarchy-menu.jsonc"

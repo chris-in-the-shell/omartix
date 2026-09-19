@@ -45,9 +45,15 @@ them, then let the package or installer substitute at publish time:
   instead of rewriting their scripts.
 - `install/artix/omarchy-upgrade-to-quattro` — ship the Omartix stub; leave
   `bin/omarchy-upgrade-to-quattro` as the upstream converter for merges.
+- `bin/omartix-update-keyring` — Artix key bootstrap; the package installs it
+  as `omarchy-update-keyring`.
+- `install/artix/omarchy-other.packages` and `install/artix/hardware/all.sh` —
+  Artix package and hardware lists; upstream files stay in `install/`.
+- `install/artix/omarchy-defaults.conf` — Artix Limine `BOOT_ORDER`; upstream
+  `etc/limine-entry-tool.d/omarchy-defaults.conf` stays for merges.
 - systemd user units and unused hardware scripts may remain in the tree.
-  `packaging/omartix/PKGBUILD` strips systemd/UWSM, and `install/hardware/all.sh`
-  must not call omitted scripts.
+  `packaging/omartix/PKGBUILD` strips systemd/UWSM and publishes the Artix
+  substitutions.
 
 Do not resolve the next quattro merge by editing the same upstream file in
 place if an Artix-only path can own the difference.
