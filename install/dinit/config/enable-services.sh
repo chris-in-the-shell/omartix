@@ -23,6 +23,10 @@ enable_dinit_service() {
 # Dependencies supplied by the respective Artix *-dinit packages start
 # automatically from these roots. Do not add a resolved/oomd substitute here:
 # DNS is owned by NetworkManager and dinit has no systemd slice model.
+install -Dm644 /usr/share/omarchy/install/artix/dinit/omarchy-plymouth-quit \
+  /etc/dinit.d/omarchy-plymouth-quit
+enable_dinit_service omarchy-plymouth-quit
+
 for service in dbus logind NetworkManager bluetoothd dockerd cupsd avahi-daemon tlp sddm limine-snapper-sync zramen earlyoom; do
   enable_dinit_service "$service"
 done

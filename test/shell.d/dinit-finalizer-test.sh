@@ -22,6 +22,10 @@ grep -F 'for service in dbus logind NetworkManager bluetoothd dockerd cupsd avah
   fail "dinit finalizer enables Omarchy's installed-system services"
 grep -F 'ACTIVE_CONSOLES="/dev/tty[2-6]"' "$services" >/dev/null ||
   fail "dinit finalizer reserves tty1 for SDDM"
+grep -F 'enable_dinit_service omarchy-plymouth-quit' "$services" >/dev/null ||
+  fail "dinit finalizer quits Plymouth before SDDM"
+grep -F 'before = sddm' "$ROOT/install/artix/dinit/omarchy-plymouth-quit" >/dev/null ||
+  fail "Plymouth quit service runs before SDDM"
 grep -F 'rm -f /etc/dinit.d/boot.d/getty@tty1' "$services" >/dev/null ||
   fail "dinit finalizer drops the tty1 getty enablement"
 for package in avahi-dinit bluez-dinit cups-dinit dbus-dinit dbus-dinit-user docker-dinit earlyoom earlyoom-dinit elogind-dinit limine-snapper-sync-dinit networkmanager-dinit pipewire-dinit pipewire-pulse-dinit sddm-dinit tlp-dinit wireplumber-dinit zramen zramen-dinit; do
