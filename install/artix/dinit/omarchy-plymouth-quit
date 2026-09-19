@@ -2,7 +2,7 @@
 # DRM device, start-hyprland exits immediately and SDDM falls back to a greeter
 # that never paints over the splash.
 type = scripted
-command = /bin/sh -c 'if command -v plymouth >/dev/null; then plymouth quit || true; fi'
+command = /usr/bin/omarchy-plymouth-quit
 depends-on = local.target
 before = sddm
 restart = false

@@ -25,6 +25,11 @@ enable_dinit_service() {
 # DNS is owned by NetworkManager and dinit has no systemd slice model.
 install -Dm644 /usr/share/omarchy/install/artix/dinit/omarchy-plymouth-quit \
   /etc/dinit.d/omarchy-plymouth-quit
+# `before = sddm` is only an ordering hint. sddm must wait for the quit
+# attempt, otherwise it races Plymouth for the DRM device.
+if [[ -f /etc/dinit.d/sddm ]] && ! grep -qx 'waits-for = omarchy-plymouth-quit' /etc/dinit.d/sddm; then
+  printf '\nwaits-for = omarchy-plymouth-quit\n' >>/etc/dinit.d/sddm
+fi
 enable_dinit_service omarchy-plymouth-quit
 
 for service in dbus logind NetworkManager bluetoothd dockerd cupsd avahi-daemon tlp sddm limine-snapper-sync zramen earlyoom; do
