@@ -66,6 +66,13 @@ package() {
   install -Dm644 logo.txt "$pkgdir/usr/share/omarchy/logo.txt"
   install -Dm644 version "$pkgdir/usr/share/omarchy/version"
 
+  # SDDM looks in the system theme path, not under /usr/share/omarchy/default.
+  install -d "$pkgdir/usr/share/sddm/themes"
+  cp -a --no-preserve=ownership default/sddm/omarchy "$pkgdir/usr/share/sddm/themes/omarchy"
+  install -Dm644 default/sddm/hyprland.lua "$pkgdir/usr/share/sddm/hyprland.lua"
+  install -Dm644 default/wayland-sessions/omarchy.desktop \
+    "$pkgdir/usr/local/share/wayland-sessions/omarchy.desktop"
+
   # Omartix is dinit-only. These guards also keep a future upstream merge from
   # accidentally reintroducing systemd payload into a published package.
   rm -rf "$pkgdir/usr/share/omarchy/default/systemd" \

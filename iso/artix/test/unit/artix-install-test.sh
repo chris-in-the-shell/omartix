@@ -26,6 +26,8 @@ fi
 # base_packages makes pacman abort before the target has been bootstrapped.
 grep -Fq 'dbus-dinit networkmanager networkmanager-dinit openresolv' "$backend"
 grep -Fq 'for service in NetworkManager sddm ufw userspawn avahi-daemon bluetoothd cupsd dockerd tlp limine-snapper-sync zramen cronie earlyoom; do enable_dinit "$service"; done' "$backend"
+grep -Fq 'ACTIVE_CONSOLES="/dev/tty[2-6]"' "$backend"
+grep -Fq 'rm -f "$target/etc/dinit.d/boot.d/getty@tty1"' "$backend"
 grep -Fq "if grep -qx 'GenuineIntel' /proc/cpuinfo; then enable_dinit thermald; fi" "$backend"
 ! grep -Fq 'dbus-dinit NetworkManager networkmanager-dinit openresolv' "$backend"
 grep -Fq 'artix-archlinux-support "$OMARCHY_NVIM_PACKAGE" "$OMARTIX_CORE_PACKAGE"' "$backend"

@@ -114,6 +114,12 @@ grep -qx 'usr/share/omarchy/etc-overrides/plymouth-plymouthd.conf' <<<"$package_
   fail "published package contains no UWSM command invocation"
 grep -Fxq 'Exec=start-hyprland' "$package_payload/usr/share/omarchy/default/wayland-sessions/omarchy.desktop" ||
   fail "published package starts the Omartix Hyprland session directly"
+grep -qx 'usr/share/sddm/themes/omarchy/Main.qml' <<<"$package_entries" ||
+  fail "package publishes the Omarchy SDDM theme where SDDM loads it"
+grep -qx 'usr/share/sddm/hyprland.lua' <<<"$package_entries" ||
+  fail "package publishes the SDDM Wayland compositor config"
+grep -qx 'usr/local/share/wayland-sessions/omarchy.desktop' <<<"$package_entries" ||
+  fail "package publishes the Omartix Wayland session desktop file"
 grep -Fq 'loginctl terminate-session' "$package_payload/usr/bin/omarchy-system-logout" ||
   fail "published package ends graphical sessions through elogind"
 ! rg -q '^ENABLE_UKI=yes$' "$package_payload/etc/limine-entry-tool.d" ||

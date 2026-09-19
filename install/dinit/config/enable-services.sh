@@ -26,3 +26,14 @@ enable_dinit_service() {
 for service in dbus logind NetworkManager bluetoothd dockerd cupsd avahi-daemon tlp sddm limine-snapper-sync zramen earlyoom; do
   enable_dinit_service "$service"
 done
+
+# Artix dinit-rc wakes getty@tty1-6 from ACTIVE_CONSOLES. SDDM needs VT1, and
+# sddm-helper fails with HELPER_TTY_ERROR if agetty already owns that tty.
+install -d -m 0755 /etc/dinit.d/config
+cat >/etc/dinit.d/config/console.conf <<'EOF'
+#!/bin/sh
+
+# tty1 is reserved for SDDM. Recovery consoles remain on tty2-tty6.
+ACTIVE_CONSOLES="/dev/tty[2-6]"
+EOF
+rm -f /etc/dinit.d/boot.d/getty@tty1

@@ -282,6 +282,16 @@ ensure_arch_extra_repository
 fstabgen -U "$target" >"$target/etc/fstab"
 
 for service in NetworkManager sddm ufw userspawn avahi-daemon bluetoothd cupsd dockerd tlp limine-snapper-sync zramen cronie earlyoom; do enable_dinit "$service"; done
+# SDDM owns VT1. Artix dinit-rc otherwise starts getty@tty1 from ACTIVE_CONSOLES
+# and sddm-helper then fails with HELPER_TTY_ERROR.
+install -d -m 0755 "$target/etc/dinit.d/config"
+cat >"$target/etc/dinit.d/config/console.conf" <<'EOF'
+#!/bin/sh
+
+# tty1 is reserved for SDDM. Recovery consoles remain on tty2-tty6.
+ACTIVE_CONSOLES="/dev/tty[2-6]"
+EOF
+rm -f "$target/etc/dinit.d/boot.d/getty@tty1"
 # thermald only manages Intel thermal hardware. Starting it on an AMD machine
 # or a VM without Intel thermal zones produces a permanent failed dinit
 # service, so enable it only where it can provide a benefit.
