@@ -4,7 +4,7 @@ set -euo pipefail
 
 source "$(dirname "$0")/base-test.sh"
 
-upgrade_to_quattro="$ROOT/bin/omarchy-upgrade-to-quattro"
+upgrade_to_quattro="$ROOT/install/artix/omarchy-upgrade-to-quattro"
 
 bash -n "$upgrade_to_quattro"
 

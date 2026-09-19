@@ -17,7 +17,6 @@ rg -Fx 'linux-headers' "$packages" >/dev/null || fail "Artix linux-headers must 
 
 [[ ! -e $ROOT/install/hardware/intel/ptl-kernel.sh ]] || fail "ptl-kernel installer must stay removed"
 ! rg -F 'ptl-kernel.sh' "$hardware" >/dev/null || fail "hardware install must not call ptl-kernel.sh"
-[[ ! -e $ROOT/install/hardware/fix-elgato-camlink-4k.sh ]] || fail "Elgato Cam Link installer must stay removed"
 ! rg -F 'fix-elgato-camlink-4k.sh' "$hardware" >/dev/null || fail "hardware install must not call the Elgato script"
 
 grep -F 'Intel Panther Lake special kernel' "$compatibility_note" >/dev/null || fail "missing Panther Lake omission note"

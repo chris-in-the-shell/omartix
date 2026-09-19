@@ -35,3 +35,19 @@ Before omitting a systemd-dependent feature, add an entry above with its
 user-visible impact and a concrete restoration condition. Remove the entry
 only after the replacement is packaged, enabled, and covered by a regression
 test.
+
+## Upstream sync
+
+Keep Omarchy paths intact when they next change. Put Artix behavior next to
+them, then let the package or installer substitute at publish time:
+
+- `migrations/artix-skip.txt` — skip upstream migrations such as `linux-omarchy`
+  instead of rewriting their scripts.
+- `install/artix/omarchy-upgrade-to-quattro` — ship the Omartix stub; leave
+  `bin/omarchy-upgrade-to-quattro` as the upstream converter for merges.
+- systemd user units and unused hardware scripts may remain in the tree.
+  `packaging/omartix/PKGBUILD` strips systemd/UWSM, and `install/hardware/all.sh`
+  must not call omitted scripts.
+
+Do not resolve the next quattro merge by editing the same upstream file in
+place if an Artix-only path can own the difference.

@@ -47,6 +47,11 @@ package() {
     ln -s "/usr/bin/$name" "$pkgdir/usr/share/omarchy/bin/$name"
   done
 
+  # Keep the upstream quattro converter in the tree for merges; ship the
+  # Omartix guidance stub so `omarchy upgrade to quattro` cannot rewrite Artix.
+  install -Dm755 install/artix/omarchy-upgrade-to-quattro \
+    "$pkgdir/usr/bin/omarchy-upgrade-to-quattro"
+
   install -d "$pkgdir/usr/share/omarchy" "$pkgdir/etc/skel/.config"
   cp -a --no-preserve=ownership applications config default etc-overrides install migrations shell themes \
     "$pkgdir/usr/share/omarchy/"

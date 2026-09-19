@@ -4,37 +4,34 @@ set -euo pipefail
 
 source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)/base-test.sh"
 
-migration="$ROOT/migrations/1789325478.sh"
+skip_file="$ROOT/migrations/artix-skip.txt"
+grep -Fxq '1789325478.sh' "$skip_file" || fail "linux-omarchy kernel migration is on the Artix skip list"
+grep -F 'linux-omarchy' "$ROOT/migrations/1789325478.sh" >/dev/null ||
+  fail "the skipped kernel migration keeps the upstream linux-omarchy script"
+
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
-mkdir -p "$scratch/bin"
+export OMARCHY_PATH="$ROOT"
+export OMARCHY_MIGRATION_STATE="$scratch/state"
+mkdir -p "$OMARCHY_MIGRATION_STATE"
 
-export PATH="$scratch/bin:$ROOT/bin:$PATH"
-export CALL_LOG="$scratch/calls"
-export INSTALLED_PACKAGES="$scratch/packages"
-printf '%s\n' linux linux-headers > "$INSTALLED_PACKAGES"
-: > "$CALL_LOG"
+pending=$("$ROOT/bin/omarchy-migrate" --pending 2>/dev/null || true)
+! grep -Fxq '1789325478.sh' <<<"$pending" || fail "skipped kernel migration is not pending"
 
-cat > "$scratch/bin/pacman" <<'SH'
+# Only the skipped kernel migration is unrecorded; others may also be pending
+# in a source tree. Run migrate against a copy that contains just that file.
+mkdir -p "$scratch/omarchy/migrations" "$scratch/bin"
+cp "$ROOT/migrations/1789325478.sh" "$ROOT/migrations/artix-skip.txt" "$scratch/omarchy/migrations/"
+cat > "$scratch/bin/omarchy-pkg-add" <<'SH'
 #!/bin/bash
-printf 'pacman %s\n' "$*" >> "$CALL_LOG"
-case "$1" in
-  -Q) grep -Fxq "$2" "$INSTALLED_PACKAGES" ;;
-  -S) exit 1 ;;
-  *) exit 99 ;;
-esac
-SH
-cat > "$scratch/bin/sudo" <<'SH'
-#!/bin/bash
-printf 'sudo %s\n' "$*" >> "$CALL_LOG"
+echo "unexpected omarchy-pkg-add $*" >&2
 exit 1
 SH
-chmod +x "$scratch/bin/"*
-
-bash -euo pipefail "$migration" >/dev/null
-
-[[ ! -s $CALL_LOG ]] || fail "the Artix kernel migration does not install packages" "$(cat "$CALL_LOG")"
-grep -Fxq linux "$INSTALLED_PACKAGES" || fail "the Artix kernel remains installed"
-! grep -Fxq linux-omarchy "$INSTALLED_PACKAGES" || fail "linux-omarchy must not be installed"
-! grep -Fxq linux-ptl "$INSTALLED_PACKAGES" || fail "linux-ptl must not be installed"
-pass "the Artix kernel migration leaves the stock kernel in place"
+chmod +x "$scratch/bin/omarchy-pkg-add"
+export PATH="$scratch/bin:$PATH"
+export OMARCHY_PATH="$scratch/omarchy"
+export OMARCHY_MIGRATION_STATE="$scratch/state2"
+mkdir -p "$OMARCHY_MIGRATION_STATE"
+"$ROOT/bin/omarchy-migrate" >/dev/null
+[[ -f $OMARCHY_MIGRATION_STATE/1789325478.sh ]] || fail "skipped migrations are recorded complete"
+pass "linux-omarchy kernel migration is skipped on Artix"

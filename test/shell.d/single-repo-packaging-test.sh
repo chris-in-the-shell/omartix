@@ -120,6 +120,10 @@ grep -qx 'usr/share/sddm/hyprland.lua' <<<"$package_entries" ||
   fail "package publishes the SDDM Wayland compositor config"
 grep -qx 'usr/local/share/wayland-sessions/omarchy.desktop' <<<"$package_entries" ||
   fail "package publishes the Omartix Wayland session desktop file"
+grep -Fq 'not available on Omartix' "$package_payload/usr/bin/omarchy-upgrade-to-quattro" ||
+  fail "published package ships the Omartix Quattro upgrader stub"
+! grep -Eq '(^|/)default/systemd/' <<<"$package_entries" ||
+  fail "published package does not ship restored systemd units"
 grep -Fq 'loginctl terminate-session' "$package_payload/usr/bin/omarchy-system-logout" ||
   fail "published package ends graphical sessions through elogind"
 ! rg -q '^ENABLE_UKI=yes$' "$package_payload/etc/limine-entry-tool.d" ||
