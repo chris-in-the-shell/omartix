@@ -32,8 +32,6 @@ limine-snapper-sync-dinit
 linux
 linux-firmware
 linux-headers
-linux-ptl
-linux-ptl-headers
 ntp
 macbook12-spi-driver-dkms
 nvidia-580xx-dkms

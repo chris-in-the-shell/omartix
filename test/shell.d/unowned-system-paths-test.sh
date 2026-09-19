@@ -31,16 +31,24 @@ allowed = {
   # that need them so the hook does not exist where it does not apply.
   "/usr/lib/elogind/system-sleep",
   # Written through a variable, so the scan below cannot see them at the point
-  # they are written. Both drop configuration into another project's tree rather
-  # than Omarchy's, which is why neither is a candidate for omarchy-settings.
+  # they are written. These drop configuration into another project's tree
+  # rather than Omarchy's and are not candidates for omarchy-settings.
   "/usr/share/chromium/extensions",
   "/usr/lib/firefox/distribution",
+  # Claude's extension is registered only when the user selects Claude.
+  "/usr/share/google-chrome/extensions",
+  "/usr/share/microsoft-edge/extensions",
   # Static content that belongs in omarchy-settings. It cannot move there in the
   # same release that first ships omarchy-update-system-pkgs-when-conflicted: the
   # upgrade carrying the handler is the one that would hit the conflict, and the
   # handler only helps once it is on disk. Package it the release after.
   "/usr/lib/chromium/initial_preferences",
 }
+
+# One-time 3.x upgrade. It runs before this rule existed and cannot be made to
+# retroactively matter for machines that already ran it. Omartix replaces it
+# with a stub, but skip it anyway so a future restoration cannot fail this net.
+skip_scripts = {"bin/omarchy-upgrade-to-quattro"}
 
 pkgs_candidates = [
   root.parent / "omarchy-pkgs/pkgbuilds",

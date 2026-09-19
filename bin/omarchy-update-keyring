@@ -3,6 +3,9 @@
 # omarchy:summary=Ensure the Omarchy and Arch keyring packages are installed and populated
 # omarchy:requires-sudo=true
 
+# omarchy-update runs this under set -e as a trusted pre-step, so a failed
+# bootstrap or a broken keyring has to stop this script here, not surface later
+# as signature errors in the middle of the main transaction.
 set -euo pipefail
 
 repository_config=${OMARTIX_PACKAGE_REPOSITORY_CONFIG:-/etc/omartix/package-repository.conf}
@@ -26,7 +29,7 @@ keyring_package=${OMARTIX_PACKAGE_KEYRING_PACKAGE:-omarchy-keyring}
 }
 
 key_file=
-cleanup() { [[ -n $key_file ]] && rm -f "$key_file"; }
+cleanup() { [[ -z $key_file ]] || rm -f "$key_file"; }
 trap cleanup EXIT
 
 if omarchy-pkg-missing "$keyring_package" || ! sudo pacman-key --list-keys "$signing_fingerprint" &>/dev/null; then
@@ -57,4 +60,8 @@ fi
 # Always reinstall, as the keyring can be updated without a package version bump.
 echo -e "\e[32m\nUpdate Arch signing keys\e[0m"
 sudo pacman -Sy --noconfirm archlinux-keyring >/dev/null 2> >(grep -vE '^warning: archlinux-keyring-[^ ]+ is up to date -- reinstalling$' >&2)
+
+# Say "correct" only once the key verifiably is: before the failure checks
+# above, a failed bootstrap or reinstall still ended here with exit 0.
+sudo pacman-key --list-keys "$signing_fingerprint" >/dev/null
 echo "Keys are correct"
